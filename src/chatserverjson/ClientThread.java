@@ -32,9 +32,30 @@ public class ClientThread extends Thread {
 
             JSONObject firstObj = new JSONObject(message);
             JSONArray firstMessage = firstObj.getJSONArray("messages");
-            ChatData.getMessages().put(firstMessage.getJSONObject(0));
+            //ChatData.getMessages().put(firstMessage.getJSONObject(0));
             JSONObject firstName = firstMessage.getJSONObject(0);
             name = firstName.getString("name");
+            
+            
+            
+            
+            
+                JSONObject objNames = new JSONObject();
+                JSONArray clientsArray = new JSONArray();
+                for (ClientThread client : ChatData.getClients()) {
+                    JSONObject userObj = new JSONObject();
+                    userObj.put("name", client.getUserName());
+                    clientsArray.put(userObj);
+                }
+                objNames.put("users", clientsArray);
+                broadcast(objNames.toString());
+            
+            /*
+                JSONObject objMessages = new JSONObject();
+                objMessages.put("messages", ChatData.getMessages());
+                sendMessage(objMessages.toString());
+            */
+            
 
             System.out.println(name + " si è connesso da " + clientSocket);
             
@@ -59,8 +80,10 @@ public class ClientThread extends Thread {
                 data.getClients().remove(this);
                 data.setLocked(false);
                 
+                
+                
                 JSONObject obj = new JSONObject();
-                obj.put("messages", ChatData.getMessages());
+                //obj.put("messages", ChatData.getMessages());
                 
                 JSONArray clientsArray = new JSONArray();
                 for (ClientThread client : ChatData.getClients()) {

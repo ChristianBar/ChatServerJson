@@ -43,7 +43,7 @@ public class ChatServerJson {
                 obj.put("messages", ChatData.getMessages());
                 clientThread.sendMessage(obj.toString());
                 
-                obj = new JSONObject();
+                /*obj = new JSONObject();
                 obj.put("messages", new JSONArray());
                 JSONArray clientsArray = new JSONArray();
                 for (ClientThread client : ChatData.getClients()) {
@@ -51,9 +51,9 @@ public class ChatServerJson {
                     userObj.put("name", client.getUserName());
                     clientsArray.put(userObj);
                 }
-                obj.put("users", clientsArray);
+                obj.put("users", clientsArray);*/
                 
-                clientThread.broadcast(obj.toString());
+                //clientThread.broadcast(obj.toString());
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(ChatServerJson.class.getName()).log(Level.SEVERE, null, ex);
