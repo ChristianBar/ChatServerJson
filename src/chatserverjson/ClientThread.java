@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class ClientThread extends Thread {
     private Socket clientSocket;
@@ -13,6 +14,7 @@ public class ClientThread extends Thread {
     private PrintWriter writer;
     private ArrayList<ClientThread> clients;
     private ChatMessages allMessages;
+    private String name;
 
     public ClientThread(Socket socket, ArrayList<ClientThread> clients, ChatMessages allMessages) {
         this.clientSocket = socket;
@@ -29,7 +31,11 @@ public class ClientThread extends Thread {
     @Override
     public void run() {
         try {
-            String message;
+            String message = reader.readLine();
+            JSONObject msg = new JSONObject(message);
+            name = msg.get("name").toString();
+            System.out.println(name + " si è connesso da " + clientSocket);
+            
             while ((message = reader.readLine()) != null) {
                 
                 JSONArray incomingMessages = new JSONArray(message);

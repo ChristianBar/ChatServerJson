@@ -25,7 +25,6 @@ public class ChatServerJson {
             while (true) {
                 // Accetto una nuova connessione
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Nuova connessione: " + clientSocket);
                 
                 // Avvio il thread che gestirà la nuova connessione
                 ClientThread clientThread = new ClientThread(clientSocket, clients, messages);
