@@ -29,38 +29,33 @@ public class ClientThread extends Thread {
     public void run() {
         try {
             String message = reader.readLine();
-
+            
+            // Legge il nome dal primo messaggio (vuoto) ricevuto
             JSONObject firstObj = new JSONObject(message);
             JSONArray firstMessage = firstObj.getJSONArray("messages");
-            //ChatData.getMessages().put(firstMessage.getJSONObject(0));
             JSONObject firstName = firstMessage.getJSONObject(0);
             name = firstName.getString("name");
             
-            
-            
-            
-            
-                JSONObject objNames = new JSONObject();
-                JSONArray clientsArray = new JSONArray();
-                for (ClientThread client : ChatData.getClients()) {
-                    JSONObject userObj = new JSONObject();
-                    userObj.put("name", client.getUserName());
-                    clientsArray.put(userObj);
-                }
-                objNames.put("users", clientsArray);
-                broadcast(objNames.toString());
-            
-            /*
-                JSONObject objMessages = new JSONObject();
-                objMessages.put("messages", ChatData.getMessages());
-                sendMessage(objMessages.toString());
-            */
-            
+            // Invia a tutti l'elenco degli utenti
+            JSONObject objNames = new JSONObject();
+            JSONArray clientsArray = new JSONArray();
+            for (ClientThread client : ChatData.getClients()) {
+                JSONObject userObj = new JSONObject();
+                userObj.put("name", client.getUserName());
+                clientsArray.put(userObj);
+            }
+            objNames.put("users", clientsArray);
+            broadcast(objNames.toString());
 
-            System.out.println(name + " si è connesso da " + clientSocket);
+            // Si auto-manda lo storico dei messaggi
+            JSONObject obj2 = new JSONObject();
+            obj2.put("messages", ChatData.getMessages());
+            sendMessage(obj2.toString());
             
+            System.out.println(name + " si è connesso da " + clientSocket);
+
+            // Ciclo principale: riceve un messaggio e lo propaga a tutti dopo esserselo salvato
             while ((message = reader.readLine()) != null) {
-                
                 JSONObject obj = new JSONObject(message);
                 JSONArray incomingMessages = obj.optJSONArray("messages", new JSONArray());
                 
@@ -74,17 +69,15 @@ public class ClientThread extends Thread {
             Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             try {
+                // Chiude la connessione e si auto-elimina dall'elenco dei client
                 clientSocket.close();
                 while(data.isLocked()) Thread.sleep(10);
                 data.setLocked(true);
                 data.getClients().remove(this);
                 data.setLocked(false);
-                
-                
-                
+
+                // manda l'elenco degli utenti aggiornato (meno se stesso, quindi)
                 JSONObject obj = new JSONObject();
-                //obj.put("messages", ChatData.getMessages());
-                
                 JSONArray clientsArray = new JSONArray();
                 for (ClientThread client : ChatData.getClients()) {
                     JSONObject userObj = new JSONObject();
@@ -92,7 +85,6 @@ public class ClientThread extends Thread {
                     clientsArray.put(userObj);
                 }
                 obj.put("users", clientsArray);
-                
                 broadcast(obj.toString());
                 
                 System.out.println("Connessione chiusa: " + clientSocket);
@@ -102,10 +94,12 @@ public class ClientThread extends Thread {
         }
     }
 
+    // Invia un messaggio al proprio socket
     public synchronized void sendMessage(String message) {
         writer.println(message);
     }
     
+    // Invia un messaggio a tutti i client connessi
     public synchronized void broadcast(String message) throws InterruptedException {
         while(data.isLocked()) Thread.sleep(10);
         data.setLocked(true);

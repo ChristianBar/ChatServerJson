@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Salva i log ogni tot secondi
+ * Salva il log dei messaggi ogni tot secondi
  */
 public class ChatLogger extends Thread {
     private ChatData data;
@@ -21,7 +21,7 @@ public class ChatLogger extends Thread {
         try {
             do {
                 Thread.sleep(1000);
-                while(data.isLocked()) Thread.sleep(100);
+                while(data.isLocked()) Thread.sleep(1000);
                 
                 data.setLocked(true);
                 String buffer = ChatData.getMessages().toString(4);
@@ -30,9 +30,7 @@ public class ChatLogger extends Thread {
                 bw.close();
                 data.setLocked(false);
             } while(true);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ChatLogger.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (InterruptedException | IOException ex) {
             Logger.getLogger(ChatLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
