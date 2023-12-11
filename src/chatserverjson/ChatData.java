@@ -1,9 +1,10 @@
 package chatserverjson;
 
+import java.util.ArrayList;
 import org.json.JSONArray;
 
-
-public class ChatMessages {
+public class ChatData {
+    private static ArrayList<ClientThread> clients = new ArrayList<>();
     private static JSONArray messages = new JSONArray();
     private boolean locked;
 
@@ -11,6 +12,10 @@ public class ChatMessages {
         return messages;
     }
 
+    public static ArrayList<ClientThread> getClients() {
+        return clients;
+    }
+    
     public boolean isLocked() {
         return locked;
     }

@@ -10,10 +10,10 @@ import java.util.logging.Logger;
  * Salva i log ogni tot secondi
  */
 public class ChatLogger extends Thread {
-    private ChatMessages allMessages;
+    private ChatData data;
     
-    public ChatLogger(ChatMessages messages) {
-        allMessages = messages;
+    public ChatLogger(ChatData messages) {
+        data = messages;
     }
     
     @Override
@@ -21,14 +21,14 @@ public class ChatLogger extends Thread {
         try {
             do {
                 Thread.sleep(1000);
-                while(allMessages.isLocked()) Thread.sleep(100);
+                while(data.isLocked()) Thread.sleep(100);
                 
-                allMessages.setLocked(true);
-                String buffer = ChatMessages.getMessages().toString(4);
+                data.setLocked(true);
+                String buffer = ChatData.getMessages().toString(4);
                 BufferedWriter bw = new BufferedWriter(new FileWriter("messages.log", false));
                 bw.write(buffer);
                 bw.close();
-                allMessages.setLocked(false);
+                data.setLocked(false);
             } while(true);
         } catch (InterruptedException ex) {
             Logger.getLogger(ChatLogger.class.getName()).log(Level.SEVERE, null, ex);
